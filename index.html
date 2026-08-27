@@ -32,8 +32,7 @@
         .first-week-banner { position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(90deg, #ff6b9d 0%, #ffa502 100%); color: white; text-align: center; padding: 10px; font-size: 14px; font-weight: 600; z-index: 1000; animation: slideDown 0.5s ease; }
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
         .streak-indicator { position: absolute; top: 105px; right: 20px; background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; z-index: 100; box-shadow: 0 4px 15px rgba(255,107,157,0.3); }
-        .message-counter { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 50; }
-        .message-counter.low { background: #ef4444; animation: pulse 1s infinite; }
+        
         
         /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
@@ -432,11 +431,10 @@
             animation: pulse 2s infinite;
         }
 
-        .check-in-btn.checked {
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            animation: none;
-        }
-
+       .check-in-btn.checked {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    animation: pulse 2s infinite;
+}
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -942,6 +940,26 @@
     top: 0;
     outline: none;
 }
+.message-counter {
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.message-counter.low {
+    background: #ef4444;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 
    </style>
 </head>
@@ -949,7 +967,7 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
     <div class="first-week-banner" id="firstWeekBanner" style="display: none;">
-        🎉 First week bonus: Unlimited AI chats! <span id="daysRemaining">7</span> days remaining
+        🎉 First 3 days: Unlimited AI chats! <span id="daysRemaining">3</span> days remaining
     </div>
     
     <div class="phone">
@@ -958,9 +976,7 @@
             <span>🔥</span><span id="streakCount">0</span>
         </div>
         
-        <div class="message-counter" id="messageCounter" style="display: none;">
-            <span id="messagesUsed">0</span> / <span id="messagesTotal">10</span>
-        </div>
+        
         
         
         <!-- MODALS -->
@@ -1860,11 +1876,16 @@
             </div>
         </div>
 
-        <div class="page" id="chat">
-            <div class="chat-header">
-                <h2 class="chat-title">💬 Chat with FanAI</h2>
-                <p class="chat-subtitle">Your personal K-pop assistant</p>
+      <div class="page" id="chat">
+    <div class="chat-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <h2 class="chat-title">💬 Chat with FanAI</h2>
+            <div class="message-counter" id="messageCounter" style="display: none;">
+                <span id="messagesUsed">0</span> / <span id="messagesTotal">10</span>
             </div>
+        </div>
+        <p class="chat-subtitle">Your personal K-pop assistant</p>
+    </div>
             <div class="chat-messages" id="chatMessages">
                 <div class="message ai">
                     <div>Annyeong! 👋 I'm FanAI, your K-pop companion! Ask me anything about your favorite groups, comebacks, schedules, or translations!</div>
@@ -2310,6 +2331,50 @@ async function fetchTrendingTracks() {
     initFreeVersion();
     initTheme();
     renderCountdowns();
+    
+    // Add sample posts if feed is empty (first time users)
+    if (fanPosts.length === 0) {
+        fanPosts = [
+            { 
+                id: 'sample1', 
+                author: 'FanBridge Official', 
+                avatar: '💜', 
+                content: 'Welcome to FanBridge! 🎉 This is your space to share K-pop moments, connect with fans, and track your favorite idols. Create your first post above! 💜', 
+                time: 'Just now', 
+                likes: 42, 
+                comments: [], 
+                isLiked: false,
+                isApiPost: false
+            },
+            { 
+                id: 'sample2', 
+                author: 'BTS_ARMY_2024', 
+                avatar: '🐰', 
+                content: 'Just got my proof album in the mail! The photocards are so beautiful 💜 Who else is collecting?', 
+                time: '2h ago', 
+                likes: 128, 
+                comments: [
+                    { author: 'KpopStan', avatar: '💎', text: 'So jealous! I\'m still waiting for mine 😭' },
+                    { author: 'JiminBias', avatar: '🐥', text: 'Which photocard did you get??' }
+                ], 
+                isLiked: false,
+                isApiPost: false
+            },
+            { 
+                id: 'sample3', 
+                author: 'NewJeansFan', 
+                avatar: '🐰', 
+                content: 'Super Shy is stuck in my head 24/7 🦋 The choreography is so cute!', 
+                time: '5h ago', 
+                likes: 89, 
+                comments: [], 
+                isLiked: false,
+                isApiPost: false
+            }
+        ];
+        localStorage.setItem('fanbridge_posts', JSON.stringify(fanPosts));
+    }
+    
     renderFanPosts();
     renderIdols();
     initCalendar();
@@ -2674,20 +2739,20 @@ async function fetchTrendingTracks() {
         
         function saveUserState() { localStorage.setItem('fanbridge_free_user', JSON.stringify(userState)); }
         
-        function checkFirstWeek() {
-            const joinDate = new Date(userState.joinDate);
-            const daysSinceJoin = Math.floor((new Date() - joinDate) / (1000 * 60 * 60 * 24));
-            if (daysSinceJoin < 7 && userState.firstWeekActive) {
-                document.getElementById('firstWeekBanner').style.display = 'block';
-                document.getElementById('daysRemaining').textContent = 7 - daysSinceJoin;
-                document.getElementById('messageCounter').style.display = 'none';
-                userState.totalMessagesToday = 9999;
-            } else {
-                userState.firstWeekActive = false;
-                document.getElementById('firstWeekBanner').style.display = 'none';
-                document.getElementById('messageCounter').style.display = 'block';
-            }
-        }
+       function checkFirstWeek() {
+    const joinDate = new Date(userState.joinDate);
+    const daysSinceJoin = Math.floor((new Date() - joinDate) / (1000 * 60 * 60 * 24));
+    if (daysSinceJoin < 3 && userState.firstWeekActive) {
+        document.getElementById('firstWeekBanner').style.display = 'block';
+        document.getElementById('daysRemaining').textContent = 3 - daysSinceJoin;
+        document.getElementById('messageCounter').style.display = 'none';
+        userState.totalMessagesToday = 9999;
+    } else {
+        userState.firstWeekActive = false;
+        document.getElementById('firstWeekBanner').style.display = 'none';
+        document.getElementById('messageCounter').style.display = 'block';
+    }
+}
         
         function calculateStreak() {
             const today = new Date().toDateString();
@@ -2708,12 +2773,34 @@ async function fetchTrendingTracks() {
         }
         
        function updateUI() {
-            // Don't show streak here - only show after login in showPage
-            document.getElementById('streakCount').textContent = userState.streak;
-            document.getElementById('messagesUsed').textContent = userState.messagesUsedToday;
-            document.getElementById('messagesTotal').textContent = userState.totalMessagesToday;
-            if (userState.totalMessagesToday - userState.messagesUsedToday <= 3 && !userState.firstWeekActive) document.getElementById('messageCounter').classList.add('low');
+    document.getElementById('streakCount').textContent = userState.streak;
+    document.getElementById('messagesUsed').textContent = userState.messagesUsedToday;
+    document.getElementById('messagesTotal').textContent = userState.totalMessagesToday;
+    
+    // Only show counter in chat page and not during first week
+    const counter = document.getElementById('messageCounter');
+    const chatPage = document.getElementById('chat');
+    const isChatActive = chatPage && chatPage.classList.contains('active');
+    
+    if (!userState.firstWeekActive && isChatActive) {
+        counter.style.display = 'block';
+        const messagesLeft = userState.totalMessagesToday - userState.messagesUsedToday;
+        
+        if (messagesLeft <= 3 && messagesLeft > 0) {
+            counter.classList.add('low');
+            counter.style.background = '#ef4444';
+        } else if (messagesLeft === 0) {
+            counter.classList.add('low');
+            counter.style.background = '#dc2626';
+            counter.innerHTML = '⚠️ Limit reached!';
+        } else {
+            counter.classList.remove('low');
+            counter.style.background = 'rgba(0,0,0,0.6)';
         }
+    } else {
+        counter.style.display = 'none';
+    }
+}
         
         function useMessage() {
             if (userState.firstWeekActive) return true;
@@ -2808,6 +2895,7 @@ function showPage(pageId) {
             } else {
                 streakIndicator.style.display = 'none';
             }
+            updateUI();
         }
         function switchTab(tabName, element) {
             showPage(tabName);
